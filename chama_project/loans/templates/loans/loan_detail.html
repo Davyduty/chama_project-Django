@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Loan Details - Chama Savings & Loans{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Loan Details</h1>
+    <a href="{% url 'loans:list' %}" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Loans
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">Loan Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Amount</h6>
+                        <p class="h4">${{ loan.amount }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Status</h6>
+                        <p>
+                            {% if loan.status == 'PENDING' %}
+                            <span class="badge bg-warning p-2">Pending</span>
+                            {% elif loan.status == 'APPROVED' %}
+                            <span class="badge bg-success p-2">Approved</span>
+                            {% elif loan.status == 'REJECTED' %}
+                            <span class="badge bg-danger p-2">Rejected</span>
+                            {% elif loan.status == 'PAID' %}
+                            <span class="badge bg-info p-2">Paid</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Purpose</h6>
+                        <p>{{ loan.purpose }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Application Date</h6>
+                        <p>{{ loan.application_date|date:"F d, Y" }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Repayment Period</h6>
+                        <p>{{ loan.repayment_period }} months</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Interest Rate</h6>
+                        <p>{{ loan.interest_rate }}%</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Total Repayment Amount</h6>
+                        <p class="h5">${{ loan.total_repayment_amount }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Monthly Payment</h6>
+                        <p class="h5">${{ loan.monthly_payment }}</p>
+                    </div>
+                    {% if loan.notes %}
+                    <div class="col-12 mb-3">
+                        <h6 class="text-muted">Notes</h6>
+                        <p>{{ loan.notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">Repayment History</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                                <th>Transaction ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for repayment in repayments %}
+                            <tr>
+                                <td>{{ repayment.payment_date|date:"M d, Y" }}</td>
+                                <td>${{ repayment.amount }}</td>
+                                <td>{{ repayment.get_payment_method_display }}</td>
+                                <td>{{ repayment.transaction_id|default:"N/A" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4">
+                                    <p class="mb-0 text-muted">No repayments made yet.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">Repayment Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h6 class="text-muted">Total Loan Amount (with interest)</h6>
+                    <p class="h4">${{ loan.total_repayment_amount }}</p>
+                </div>
+                <div class="mb-4">
+                    <h6 class="text-muted">Total Repaid</h6>
+                    <p class="h4">${{ total_repaid }}</p>
+                </div>
+                <div class="mb-4">
+                    <h6 class="text-muted">Remaining Balance</h6>
+                    <p class="h4">${{ remaining_balance }}</p>
+                </div>
+                
+                <div class="progress mb-3" style="height: 20px;">
+                    {% if loan.total_repayment_amount > 0 %}
+                    {% with percentage=total_repaid|floatformat:2|stringformat:"s"|add:"0"|div:loan.total_repayment_amount|floatformat:2|stringformat:"s"|add:"0"|mul:100 %}
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ percentage }}%;" aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100">{{ percentage|floatformat:0 }}%</div>
+                    {% endwith %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        {% if loan.status == 'APPROVED' and remaining_balance > 0 %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">Make a Repayment</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.amount|as_crispy_field }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.payment_method|as_crispy_field }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.transaction_id|as_crispy_field }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.notes|as_crispy_field }}
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-money-bill-wave me-2"></i>Submit Payment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

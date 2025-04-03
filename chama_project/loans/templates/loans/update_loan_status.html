@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Update Loan Status - Chama Savings & Loans{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h2 class="card-title mb-0">Update Loan Status</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>Loan Details</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>User:</strong> {{ loan.user.username }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Amount:</strong> ${{ loan.amount }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Purpose:</strong> {{ loan.purpose }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Application Date:</strong> {{ loan.application_date|date:"M d, Y" }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Current Status:</strong> 
+                            {% if loan.status == 'PENDING' %}
+                            <span class="badge bg-warning">Pending</span>
+                            {% elif loan.status == 'APPROVED' %}
+                            <span class="badge bg-success">Approved</span>
+                            {% elif loan.status == 'REJECTED' %}
+                            <span class="badge bg-danger">Rejected</span>
+                            {% elif loan.status == 'PAID' %}
+                            <span class="badge bg-info">Paid</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.status|as_crispy_field }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.notes|as_crispy_field }}
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Status
+                        </button>
+                        <a href="{% url 'dashboard:admin_loans' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Loans
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Make Contribution - Chama Savings & Loans{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h2 class="card-title mb-0">Make a Contribution</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.amount|as_crispy_field }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.payment_method|as_crispy_field }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.transaction_id|as_crispy_field }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.notes|as_crispy_field }}
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Submit Contribution
+                        </button>
+                        <a href="{% url 'contributions:list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Contributions
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

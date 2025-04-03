@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Apply for Loan - Chama Savings & Loans{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h2 class="card-title mb-0">Apply for a Loan</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-4">
+                    <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Loan Eligibility</h5>
+                    <p class="mb-1">Your total contributions: <strong>${{ total_contributions }}</strong></p>
+                    <p class="mb-0">Maximum loan amount: <strong>${{ max_loan_amount }}</strong> (3x your contributions)</p>
+                </div>
+                
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.amount|as_crispy_field }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.purpose|as_crispy_field }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.repayment_period|as_crispy_field }}
+                        <small class="form-text text-muted">Number of months to repay the loan</small>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.notes|as_crispy_field }}
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Application
+                        </button>
+                        <a href="{% url 'loans:list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Loans
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

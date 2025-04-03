@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Profile - Chama Savings & Loans{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="row align-items-center">
+        <div class="col-md-3 text-center">
+            <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="profile-avatar mb-3">
+        </div>
+        <div class="col-md-9">
+            <h2 class="mb-1">{{ user.get_full_name }}</h2>
+            <p class="text-muted mb-2">@{{ user.username }}</p>
+            <p class="mb-2"><i class="fas fa-calendar-alt me-2"></i>Member since: {{ user.profile.date_joined_chama|date:"F d, Y" }}</p>
+            <div class="mt-3">
+                <span class="badge bg-primary p-2 me-2">
+                    <i class="fas fa-coins me-1"></i>
+                    Total Contributions: ${{ user.profile.total_contributions }}
+                </span>
+                <span class="badge bg-info p-2">
+                    <i class="fas fa-money-bill-wave me-1"></i>
+                    Active Loans: {{ user.profile.active_loans }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Update Profile</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ user_form.first_name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ user_form.last_name|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ user_form.email|as_crispy_field }}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ profile_form.phone_number|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ profile_form.id_number|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ profile_form.profile_picture|as_crispy_field }}
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
