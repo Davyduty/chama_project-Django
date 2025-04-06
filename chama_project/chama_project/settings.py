@@ -10,7 +10,7 @@ SECRET_KEY = 'django-insecure-your-secret-key-here'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://chama-project-django.onrender.com']
+ALLOWED_HOSTS = [ALLOWED_HOSTS = ['chama-project-django.onrender.com', 'localhost', '127.0.0.1']]
 
 # Application definition
 INSTALLED_APPS = [
